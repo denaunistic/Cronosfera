@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Time Progress Tracker</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      margin-top: 50px;
+      background-color: #f4f4f4;
+      color: #333;
+    }
+    h1 {
+      font-size: 2.5em;
+      margin-bottom: 20px;
+    }
+    .progress-container {
+      display: inline-block;
+      text-align: left;
+      font-size: 1.2em;
+      margin: 10px;
+      padding: 20px;
+      background-color: #fff;
+      border-radius: 10px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+  </style>
+  <script>
+    function updateProgress() {
+      const now = new Date();
+
+      // Milliseconds in the current second
+      const milliseconds = now.getMilliseconds();
+      const secondProgress = (milliseconds / 1000) * 100;
+
+      // Seconds in the current minute
+      const seconds = now.getSeconds() + (milliseconds / 1000);
+      const minuteProgress = (seconds / 60) * 100;
+
+      // Minutes in the current hour
+      const minutes = now.getMinutes() + (seconds / 60);
+      const hourProgress = (minutes / 60) * 100;
+
+      // Hours in the current day
+      const hours = now.getHours() + (minutes / 60);
+      const dayProgress = (hours / 24) * 100;
+
+      // Days in the current week (starting from Monday)
+      const dayOfWeek = now.getDay(); // 0 (Sunday) to 6 (Saturday)
+      const startOfWeek = new Date(now.getFullYear(), now.getMonth(), now.getDate() - (dayOfWeek === 0 ? 6 : dayOfWeek - 1));
+      const weekProgress = ((now - startOfWeek) / (7 * 86400000)) * 100;
+
+      // Days in the current month
+      const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+      const endOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0);
+      const daysInMonth = endOfMonth.getDate(); // Get the number of days in the current month
+      const monthProgress = ((now - startOfMonth) / (daysInMonth * 86400000)) * 100;
+
+      // Days in the current year
+      const startOfYear = new Date(now.getFullYear(), 0, 1);
+      const endOfYear = new Date(now.getFullYear() + 1, 0, 1);
+      const yearProgress = ((now - startOfYear) / (endOfYear - startOfYear)) * 100;
+
+      // Update the DOM
+      document.getElementById('second-progress').innerText = `Second Progress: ${secondProgress.toFixed(2)}%`;
+      document.getElementById('minute-progress').innerText = `Minute Progress: ${minuteProgress.toFixed(2)}%`;
+      document.getElementById('hour-progress').innerText = `Hour Progress: ${hourProgress.toFixed(2)}%`;
+      document.getElementById('day-progress').innerText = `Day Progress: ${dayProgress.toFixed(2)}%`;
+      document.getElementById('week-progress').innerText = `Week Progress: ${weekProgress.toFixed(2)}%`;
+      document.getElementById('month-progress').innerText = `Month Progress: ${monthProgress.toFixed(2)}%`;
+      document.getElementById('year-progress').innerText = `Year Progress: ${yearProgress.toFixed(2)}%`;
+    }
+
+    // Update every millisecond for smooth second progress
+    setInterval(updateProgress, 10);
+    updateProgress(); // Initial call
+  </script>
+</head>
+<body>
+  <h1>Time Progress Tracker</h1>
+  <div class="progress-container">
+    <p id="second-progress">Second Progress: 0%</p>
+    <p id="minute-progress">Minute Progress: 0%</p>
+    <p id="hour-progress">Hour Progress: 0%</p>
+    <p id="day-progress">Day Progress: 0%</p>
+    <p id="week-progress">Week Progress: 0%</p>
+    <p id="month-progress">Month Progress: 0%</p>
+    <p id="year-progress">Year Progress: 0%</p>
+  </div>
+</body>
+</html>
