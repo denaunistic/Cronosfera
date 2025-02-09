@@ -94,39 +94,39 @@
         <table>
             <tr>
                 <td>Día del año:</td>
-                <td id="day-of-year">38</td>
+                <td id="day-of-year"></td>
             </tr>
             <tr>
                 <td>Hoy es:</td>
-                <td id="current-day">Viernes</td>
+                <td id="current-day"></td>
             </tr>
             <tr>
                 <td>Fecha:</td>
-                <td id="current-date">7 de Febrero de 2025</td>
+                <td id="current-date"></td>
             </tr>
             <tr>
                 <td>Semana del año:</td>
-                <td id="week-number">6</td>
+                <td id="week-number"></td>
             </tr>
         </table>
 
         <!-- Progress Bars -->
         <div class="progress-container">
-            <div class="progress-label">Progreso del año: <span id="year-progress">10.7</span>%</div>
+            <div class="progress-label">Progreso del año: <span id="year-progress"></span>%</div>
             <div class="progress-bar">
                 <div class="progress-bar-fill" id="year-progress-bar"></div>
             </div>
         </div>
 
         <div class="progress-container">
-            <div class="progress-label">Progreso del mes: <span id="month-progress">25.0</span>%</div>
+            <div class="progress-label">Progreso del mes: <span id="month-progress"></span>%</div>
             <div class="progress-bar">
                 <div class="progress-bar-fill" id="month-progress-bar"></div>
             </div>
         </div>
 
         <div class="progress-container">
-            <div class="progress-label">Progreso de la semana: <span id="week-progress">71.4</span>%</div>
+            <div class="progress-label">Progreso de la semana: <span id="week-progress"></span>%</div>
             <div class="progress-bar">
                 <div class="progress-bar-fill" id="week-progress-bar"></div>
             </div>
@@ -134,11 +134,16 @@
 
         <!-- Footer -->
         <div class="footer">
-            Cronosfera © 2025
+            Cronosfera © <span id="current-year"></span>
         </div>
     </div>
 
     <script>
+        // Function to check if a year is a leap year
+        function isLeapYear(year) {
+            return (year % 4 === 0 && year % 100 !== 0) || (year % 400 === 0);
+        }
+
         // Function to calculate the day of the year
         function getDayOfYear(date) {
             const start = new Date(date.getFullYear(), 0, 0);
@@ -149,20 +154,19 @@
 
         // Function to calculate the percentage of the year passed
         function getYearProgress(date) {
-            const startOfYear = new Date(date.getFullYear(), 0, 1); // January 1st, 00:00:00
-            const endOfYear = new Date(date.getFullYear() + 1, 0, 1); // January 1st of the next year, 00:00:00
-            const totalMillisecondsInYear = endOfYear - startOfYear; // Total milliseconds in the year
-            const elapsedMilliseconds = date - startOfYear; // Milliseconds elapsed since the start of the year
-            return ((elapsedMilliseconds / totalMillisecondsInYear) * 100).toFixed(1);
+            const year = date.getFullYear();
+            const daysInYear = isLeapYear(year) ? 366 : 365;
+            const dayOfYear = getDayOfYear(date);
+            return ((dayOfYear / daysInYear) * 100).toFixed(1);
         }
 
         // Function to calculate the percentage of the month passed
         function getMonthProgress(date) {
-            const start = new Date(date.getFullYear(), date.getMonth(), 1);
-            const end = new Date(date.getFullYear(), date.getMonth() + 1, 0);
-            const diff = date - start;
-            const total = end - start;
-            return ((diff / total) * 100).toFixed(1);
+            const year = date.getFullYear();
+            const month = date.getMonth();
+            const daysInMonth = new Date(year, month + 1, 0).getDate();
+            const dayOfMonth = date.getDate();
+            return ((dayOfMonth / daysInMonth) * 100).toFixed(1);
         }
 
         // Function to calculate the percentage of the week passed (Monday to Sunday)
@@ -197,6 +201,7 @@
             document.getElementById('current-date').textContent = today.toLocaleDateString('es-CO', options);
             document.getElementById('day-of-year').textContent = getDayOfYear(today);
             document.getElementById('week-number').textContent = Math.ceil(getDayOfYear(today) / 7);
+            document.getElementById('current-year').textContent = today.getFullYear();
 
             // Update progress percentages
             const yearProgress = getYearProgress(today);
@@ -216,8 +221,8 @@
         // Initial content update
         updateContent();
 
-        // Schedule content update every 24 hours (86400000 milliseconds)
-        setInterval(updateContent, 86400000);
+        // Schedule content update every second for real-time updates
+        setInterval(updateContent, 1000);
     </script>
 </body>
 </html>
