@@ -1,91 +1,223 @@
 <!DOCTYPE html>
-<html>
+<html lang="es">
 <head>
-  <title>Time Progress Tracker</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      text-align: center;
-      margin-top: 50px;
-      background-color: #f4f4f4;
-      color: #333;
-    }
-    h1 {
-      font-size: 2.5em;
-      margin-bottom: 20px;
-    }
-    .progress-container {
-      display: inline-block;
-      text-align: left;
-      font-size: 1.2em;
-      margin: 10px;
-      padding: 20px;
-      background-color: #fff;
-      border-radius: 10px;
-      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    }
-  </style>
-  <script>
-    function updateProgress() {
-      const now = new Date();
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cronosfera</title>
+    <style>
+        /* General Styles */
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f4f4f9;
+            color: #333;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
 
-      // Milliseconds in the current second
-      const milliseconds = now.getMilliseconds();
-      const secondProgress = (milliseconds / 1000) * 100;
+        /* Calendar Container */
+        .calendar {
+            background-color: #ffffff;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            max-width: 400px;
+            width: 100%;
+        }
 
-      // Seconds in the current minute
-      const seconds = now.getSeconds() + (milliseconds / 1000);
-      const minuteProgress = (seconds / 60) * 100;
+        /* Header */
+        .calendar h1 {
+            font-size: 24px;
+            margin-bottom: 20px;
+            color: #2c3e50;
+        }
 
-      // Minutes in the current hour
-      const minutes = now.getMinutes() + (seconds / 60);
-      const hourProgress = (minutes / 60) * 100;
+        /* Table Styles */
+        .calendar table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
 
-      // Hours in the current day
-      const hours = now.getHours() + (minutes / 60);
-      const dayProgress = (hours / 24) * 100;
+        .calendar td {
+            padding: 12px;
+            border: 1px solid #e0e0e0;
+            font-size: 16px;
+        }
 
-      // Days in the current week (starting from Monday)
-      const dayOfWeek = now.getDay(); // 0 (Sunday) to 6 (Saturday)
-      const startOfWeek = new Date(now.getFullYear(), now.getMonth(), now.getDate() - (dayOfWeek === 0 ? 6 : dayOfWeek - 1));
-      const weekProgress = ((now - startOfWeek) / (7 * 86400000)) * 100;
+        .calendar td:first-child {
+            font-weight: bold;
+            background-color: #f9f9f9;
+            color: #555;
+        }
 
-      // Days in the current month
-      const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
-      const endOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0);
-      const daysInMonth = endOfMonth.getDate(); // Get the number of days in the current month
-      const monthProgress = ((now - startOfMonth) / (daysInMonth * 86400000)) * 100;
+        /* Progress Bars */
+        .progress-container {
+            margin: 20px 0;
+        }
 
-      // Days in the current year
-      const startOfYear = new Date(now.getFullYear(), 0, 1);
-      const endOfYear = new Date(now.getFullYear() + 1, 0, 1);
-      const yearProgress = ((now - startOfYear) / (endOfYear - startOfYear)) * 100;
+        .progress-label {
+            font-size: 14px;
+            color: #555;
+            margin-bottom: 5px;
+        }
 
-      // Update the DOM
-      document.getElementById('second-progress').innerText = `Second Progress: ${secondProgress.toFixed(2)}%`;
-      document.getElementById('minute-progress').innerText = `Minute Progress: ${minuteProgress.toFixed(2)}%`;
-      document.getElementById('hour-progress').innerText = `Hour Progress: ${hourProgress.toFixed(2)}%`;
-      document.getElementById('day-progress').innerText = `Day Progress: ${dayProgress.toFixed(2)}%`;
-      document.getElementById('week-progress').innerText = `Week Progress: ${weekProgress.toFixed(2)}%`;
-      document.getElementById('month-progress').innerText = `Month Progress: ${monthProgress.toFixed(2)}%`;
-      document.getElementById('year-progress').innerText = `Year Progress: ${yearProgress.toFixed(2)}%`;
-    }
+        .progress-bar {
+            background-color: #e0e0e0;
+            border-radius: 10px;
+            overflow: hidden;
+            height: 10px;
+        }
 
-    // Update every millisecond for smooth second progress
-    setInterval(updateProgress, 10);
-    updateProgress(); // Initial call
-  </script>
+        .progress-bar-fill {
+            background-color: #3498db;
+            height: 100%;
+            border-radius: 10px;
+        }
+
+        /* Footer */
+        .footer {
+            font-size: 14px;
+            color: #777;
+            margin-top: 20px;
+        }
+    </style>
 </head>
 <body>
-  <h1>Time Progress Tracker</h1>
-  <div class="progress-container">
-    <p id="second-progress">Second Progress: 0%</p>
-    <p id="minute-progress">Minute Progress: 0%</p>
-    <p id="hour-progress">Hour Progress: 0%</p>
-    <p id="day-progress">Day Progress: 0%</p>
-    <p id="week-progress">Week Progress: 0%</p>
-    <p id="month-progress">Month Progress: 0%</p>
-    <p id="year-progress">Year Progress: 0%</p>
-  </div>
+    <div class="calendar">
+        <h1>Cronosfera</h1>
+        <p>¿Qué día es hoy?</p>
+        <table>
+            <tr>
+                <td>Día del año:</td>
+                <td id="day-of-year">38</td>
+            </tr>
+            <tr>
+                <td>Hoy es:</td>
+                <td id="current-day">Viernes</td>
+            </tr>
+            <tr>
+                <td>Fecha:</td>
+                <td id="current-date">7 de Febrero de 2025</td>
+            </tr>
+            <tr>
+                <td>Semana del año:</td>
+                <td id="week-number">6</td>
+            </tr>
+        </table>
+
+        <!-- Progress Bars -->
+        <div class="progress-container">
+            <div class="progress-label">Progreso del año: <span id="year-progress">10.7</span>%</div>
+            <div class="progress-bar">
+                <div class="progress-bar-fill" id="year-progress-bar"></div>
+            </div>
+        </div>
+
+        <div class="progress-container">
+            <div class="progress-label">Progreso del mes: <span id="month-progress">25.0</span>%</div>
+            <div class="progress-bar">
+                <div class="progress-bar-fill" id="month-progress-bar"></div>
+            </div>
+        </div>
+
+        <div class="progress-container">
+            <div class="progress-label">Progreso de la semana: <span id="week-progress">71.4</span>%</div>
+            <div class="progress-bar">
+                <div class="progress-bar-fill" id="week-progress-bar"></div>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="footer">
+            Cronosfera © 2025
+        </div>
+    </div>
+
+    <script>
+        // Function to calculate the day of the year
+        function getDayOfYear(date) {
+            const start = new Date(date.getFullYear(), 0, 0);
+            const diff = date - start;
+            const oneDay = 1000 * 60 * 60 * 24;
+            return Math.floor(diff / oneDay);
+        }
+
+        // Function to calculate the percentage of the year passed
+        function getYearProgress(date) {
+            const startOfYear = new Date(date.getFullYear(), 0, 1); // January 1st, 00:00:00
+            const endOfYear = new Date(date.getFullYear() + 1, 0, 1); // January 1st of the next year, 00:00:00
+            const totalMillisecondsInYear = endOfYear - startOfYear; // Total milliseconds in the year
+            const elapsedMilliseconds = date - startOfYear; // Milliseconds elapsed since the start of the year
+            return ((elapsedMilliseconds / totalMillisecondsInYear) * 100).toFixed(1);
+        }
+
+        // Function to calculate the percentage of the month passed
+        function getMonthProgress(date) {
+            const start = new Date(date.getFullYear(), date.getMonth(), 1);
+            const end = new Date(date.getFullYear(), date.getMonth() + 1, 0);
+            const diff = date - start;
+            const total = end - start;
+            return ((diff / total) * 100).toFixed(1);
+        }
+
+        // Function to calculate the percentage of the week passed (Monday to Sunday)
+        function getWeekProgress(date) {
+            const dayOfWeek = date.getDay(); // 0 (Sunday) to 6 (Saturday)
+            let daysPassed;
+            if (dayOfWeek === 0) {
+                // If it's Sunday, the week is 100% complete
+                daysPassed = 7;
+            } else {
+                // Otherwise, calculate days passed since Monday
+                daysPassed = dayOfWeek; // Monday = 1, Tuesday = 2, ..., Sunday = 0
+            }
+            const totalDaysInWeek = 7;
+            return ((daysPassed / totalDaysInWeek) * 100).toFixed(1);
+        }
+
+        // Function to update the website content based on the user's timezone
+        function updateContent() {
+            const today = new Date();
+            const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone; // Get user's timezone
+            const options = { 
+                weekday: 'long', 
+                year: 'numeric', 
+                month: 'long', 
+                day: 'numeric', 
+                timeZone: timezone // Use the user's timezone
+            };
+
+            // Update date and time information
+            document.getElementById('current-day').textContent = today.toLocaleDateString('es-CO', { weekday: 'long', timeZone: timezone });
+            document.getElementById('current-date').textContent = today.toLocaleDateString('es-CO', options);
+            document.getElementById('day-of-year').textContent = getDayOfYear(today);
+            document.getElementById('week-number').textContent = Math.ceil(getDayOfYear(today) / 7);
+
+            // Update progress percentages
+            const yearProgress = getYearProgress(today);
+            const monthProgress = getMonthProgress(today);
+            const weekProgress = getWeekProgress(today);
+
+            document.getElementById('year-progress').textContent = yearProgress;
+            document.getElementById('month-progress').textContent = monthProgress;
+            document.getElementById('week-progress').textContent = weekProgress;
+
+            // Update progress bars
+            document.getElementById('year-progress-bar').style.width = `${yearProgress}%`;
+            document.getElementById('month-progress-bar').style.width = `${monthProgress}%`;
+            document.getElementById('week-progress-bar').style.width = `${weekProgress}%`;
+        }
+
+        // Initial content update
+        updateContent();
+
+        // Schedule content update every 24 hours (86400000 milliseconds)
+        setInterval(updateContent, 86400000);
+    </script>
 </body>
 </html>
