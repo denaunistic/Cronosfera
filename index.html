@@ -152,6 +152,19 @@
             return Math.floor(diff / oneDay);
         }
 
+        // Function to calculate the ISO week number
+        function getISOWeekNumber(date) {
+            const target = new Date(date.valueOf());
+            const dayNumber = (date.getDay() + 6) % 7; // Adjust so Monday is 0, Sunday is 6
+            target.setDate(target.getDate() - dayNumber + 3); // Target Thursday of this week
+            const firstThursday = target.valueOf();
+            target.setMonth(0, 1); // Set to January 1st
+            if (target.getDay() !== 4) {
+                target.setMonth(0, 1 + ((4 - target.getDay() + 7) % 7)); // Adjust to the first Thursday
+            }
+            return 1 + Math.ceil((firstThursday - target) / 604800000); // 604800000 = milliseconds in a week
+        }
+
         // Function to calculate the percentage of the year passed
         function getYearProgress(date) {
             const year = date.getFullYear();
@@ -171,15 +184,8 @@
 
         // Function to calculate the percentage of the week passed (Monday to Sunday)
         function getWeekProgress(date) {
-            const dayOfWeek = date.getDay(); // 0 (Sunday) to 6 (Saturday)
-            let daysPassed;
-            if (dayOfWeek === 0) {
-                // If it's Sunday, the week is 100% complete
-                daysPassed = 7;
-            } else {
-                // Otherwise, calculate days passed since Monday
-                daysPassed = dayOfWeek; // Monday = 1, Tuesday = 2, ..., Sunday = 0
-            }
+            const dayOfWeek = (date.getDay() + 6) % 7; // Monday = 0, Sunday = 6
+            const daysPassed = dayOfWeek + 1; // Days passed since Monday
             const totalDaysInWeek = 7;
             return ((daysPassed / totalDaysInWeek) * 100).toFixed(1);
         }
@@ -200,7 +206,7 @@
             document.getElementById('current-day').textContent = today.toLocaleDateString('es-CO', { weekday: 'long', timeZone: timezone });
             document.getElementById('current-date').textContent = today.toLocaleDateString('es-CO', options);
             document.getElementById('day-of-year').textContent = getDayOfYear(today);
-            document.getElementById('week-number').textContent = Math.ceil(getDayOfYear(today) / 7);
+            document.getElementById('week-number').textContent = getISOWeekNumber(today);
             document.getElementById('current-year').textContent = today.getFullYear();
 
             // Update progress percentages
