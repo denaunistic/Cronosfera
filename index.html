@@ -79,6 +79,22 @@
             border-radius: 10px;
         }
 
+        /* Sunrise and Sunset Styles */
+        .sun-times {
+            margin-top: 20px;
+            font-size: 16px;
+            color: #555;
+        }
+
+        .sun-time {
+            margin: 10px 0;
+        }
+
+        .sun-time span:first-child {
+            font-weight: bold;
+            margin-right: 10px;
+        }
+
         /* Footer */
         .footer {
             font-size: 14px;
@@ -129,6 +145,18 @@
             <div class="progress-label">Progreso de la semana: <span id="week-progress"></span>%</div>
             <div class="progress-bar">
                 <div class="progress-bar-fill" id="week-progress-bar"></div>
+            </div>
+        </div>
+
+        <!-- Sunrise and Sunset Section -->
+        <div class="sun-times">
+            <div class="sun-time">
+                <span>🌅 Amanecer:</span>
+                <span id="sunrise"></span>
+            </div>
+            <div class="sun-time">
+                <span>🌇 Atardecer:</span>
+                <span id="sunset"></span>
             </div>
         </div>
 
@@ -190,6 +218,49 @@
             return ((daysPassed / totalDaysInWeek) * 100).toFixed(1);
         }
 
+        // Function to fetch sunrise and sunset times using Sunrise-Sunset API
+        async function getSunTimes(lat, lon) {
+            const url = `https://api.sunrise-sunset.org/json?lat=${lat}&lng=${lon}&formatted=0`;
+            try {
+                const response = await fetch(url);
+                const data = await response.json();
+                const sunrise = new Date(data.results.sunrise);
+                const sunset = new Date(data.results.sunset);
+                return { sunrise, sunset };
+            } catch (error) {
+                console.error("Error fetching sun times:", error);
+                return null;
+            }
+        }
+
+        // Function to format time
+        function formatTime(date, timezone) {
+            return date.toLocaleTimeString('es-CO', { timeZone: timezone, hour: '2-digit', minute: '2-digit' });
+        }
+
+        // Function to update sun times
+        async function updateSunTimes() {
+            // Get user's location
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(async (position) => {
+                    const lat = position.coords.latitude;
+                    const lon = position.coords.longitude;
+                    const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+
+                    // Fetch sunrise and sunset times
+                    const sunTimes = await getSunTimes(lat, lon);
+                    if (sunTimes) {
+                        document.getElementById('sunrise').textContent = formatTime(sunTimes.sunrise, timezone);
+                        document.getElementById('sunset').textContent = formatTime(sunTimes.sunset, timezone);
+                    }
+                }, (error) => {
+                    console.error("Error getting location:", error);
+                });
+            } else {
+                console.error("Geolocation is not supported by this browser.");
+            }
+        }
+
         // Function to update the website content based on the user's timezone
         function updateContent() {
             const today = new Date();
@@ -226,9 +297,13 @@
 
         // Initial content update
         updateContent();
+        updateSunTimes(); // Fetch and display sunrise and sunset times
 
         // Schedule content update every second for real-time updates
         setInterval(updateContent, 1000);
+
+        // Schedule sun times update every hour (optional)
+        setInterval(updateSunTimes, 3600000); // 3600000 ms = 1 hour
     </script>
 </body>
 </html>
